@@ -1,0 +1,26 @@
+﻿<Properties StartupConfiguration="{FB39AA55-3132-4F96-93B1-6DA799D45646}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Core/UrhoApp.cs">
+    <Files>
+      <File FileName="Core/UrhoApp.cs" Line="24" Column="21" />
+      <File FileName="Droid/MainActivity.cs" Line="42" Column="12" />
+      <File FileName="UWP/MainPage.xaml.cs" Line="45" Column="40" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="FaceDetection" expanded="True">
+            <Node name="FaceDetection" expanded="True">
+              <Node name="UrhoApp.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.ItemProperties.NotImplemented.FaceDetection.Droid PreferredExecutionTarget="Android.AVD_for_Nexus_6_by_Google_1G" />
+</Properties>
