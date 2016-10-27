@@ -19,13 +19,13 @@ namespace FaceDetection
 		Scene scene;
 		Camera camera;
 
-    Func<FrameWithFaces> frameSource;
+    Func<CameraPreviewEventArgs> frameSource;
 
 		public const int VideoCapturingFPS = 0; //200, 60, 24, 0 (no limit)
 
 		public UrhoApp(ApplicationOptions options) : base(options) {}
 
-		public void CaptureVideo(Func<FrameWithFaces> frameSource)
+    public void CaptureVideo(Func<CameraPreviewEventArgs> frameSource)
 		{
       this.frameSource = frameSource;
 			//while (!Engine.Exiting && !IsDeleted)
@@ -76,13 +76,13 @@ namespace FaceDetection
 			await planeNode.RunActionsAsync(new RepeatForever(new RotateBy(duration: 1, deltaAngleX: 0, deltaAngleY: 90, deltaAngleZ: 0)));
 		}
 
-		public unsafe void SetFrame(FrameWithFaces frame)
+    public unsafe void SetFrame(CameraPreviewEventArgs frame)
 		{
       //Stopwatch stopWatch = new Stopwatch();
       //stopWatch.Start();
       if (cameraTexture == null)
       {
-        CreateVideoTexturePlaceholder(frame.FrameWidth, frame.FrameHeight);
+        CreateVideoTexturePlaceholder(frame.Width, frame.Height);
       }
 
 			fixed (byte* bptr = frame.FrameData)
@@ -91,7 +91,7 @@ namespace FaceDetection
         //ret.SetSize(frame.FrameWidth, frame.FrameHeight, 4);
         //ret.SetData(bptr);
 
-        cameraTexture?.SetData(0, 0, 0, frame.FrameWidth, frame.FrameHeight, bptr);
+        cameraTexture?.SetData(0, 0, 0, frame.Width, frame.Height, bptr);
         //cameraTexture?.SetData(ret, true);
 			}
 

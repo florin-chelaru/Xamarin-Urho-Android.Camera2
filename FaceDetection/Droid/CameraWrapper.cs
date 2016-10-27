@@ -23,7 +23,7 @@ using RType = Android.Support.V8.Renderscript.Type;
 
 namespace FaceDetection.Droid
 {
-  public class CameraWrapper : Java.Lang.Object, ImageReader.IOnImageAvailableListener
+  public class CameraWrapper //: Java.Lang.Object // , ImageReader.IOnImageAvailableListener
   {
     // Max preview width that is guaranteed by Camera2 API
     const int MAX_PREVIEW_WIDTH = 1920;
@@ -107,7 +107,10 @@ namespace FaceDetection.Droid
         this.previewSize = previewSize;
 
         imageReader = ImageReader.NewInstance(previewSize.Width, previewSize.Height, ImageFormatType.Yuv420888, /*maxImages*/2);
-        imageReader.SetOnImageAvailableListener(this, backgroundHandler);
+
+        var camPreviewProcessor = new CameraPreviewProcessor();
+        camPreviewProcessor.PreviewFrameAvailable += CamPreviewProcessor_PreviewFrameAvailable;
+        imageReader.SetOnImageAvailableListener(camPreviewProcessor, backgroundHandler);
 
 
         // Find out if we need to swap dimension to get the preview size relative to sensor
@@ -507,14 +510,15 @@ namespace FaceDetection.Droid
     #endregion
 
     #region ImageReader.IOnImageAvailableListener implementation
-    public class CameraPreviewEventArgs : EventArgs
-    {
-      public byte[] FrameData { get; set; }
-      public int Width { get; set; }
-      public int Height { get; set; }
-    }
+
 
     public event EventHandler<CameraPreviewEventArgs> PreviewFrameAvailable;
+
+    void CamPreviewProcessor_PreviewFrameAvailable(object sender, CameraPreviewEventArgs e)
+    {
+      var handler = PreviewFrameAvailable;
+      if (handler != null) { handler(this, e); }
+    }
 
     public void OnImageAvailable(ImageReader reader)
     {

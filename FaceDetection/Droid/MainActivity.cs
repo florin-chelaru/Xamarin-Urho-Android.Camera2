@@ -29,7 +29,9 @@ namespace FaceDetection.Droid
 		ScreenOrientation = ScreenOrientation.Portrait)]
 	public class MainActivity : Activity /*, Camera.IPreviewCallback*/
 	{
-		byte[] lastFrame;
+    CameraPreviewEventArgs lastFrame;
+    object sync = new object();
+
     //Camera camera;
     CameraWrapper camera;
 		UrhoApp urhoApp;
@@ -71,15 +73,15 @@ namespace FaceDetection.Droid
 			urhoApp.CaptureVideo(OnFrameRequested);
 		}
 
-		FrameWithFaces OnFrameRequested()
+    CameraPreviewEventArgs OnFrameRequested()
 		{
-      return lastFrame == null ? null : new FrameWithFaces {FrameData = lastFrame, FrameWidth = previewSize.Width, FrameHeight = previewSize.Height};
+      return lastFrame;
 		}
 
     //DateTime lastTime = DateTime.Now;
     Stopwatch watch = new Stopwatch();
 
-    void OnPreviewFrame(object sender, CameraWrapper.CameraPreviewEventArgs e)
+    void OnPreviewFrame(object sender, CameraPreviewEventArgs e)
     {
       //if (watch.IsRunning)
       //{
@@ -89,8 +91,13 @@ namespace FaceDetection.Droid
       //}
       //watch.Start();
 
-      lastFrame = e.FrameData;
-      previewSize = new Size(e.Width, e.Height);
+      if ((lastFrame?.FrameOrder ?? -1) >= e.FrameOrder) { return; }
+      lock (sync)
+      {
+        if ((lastFrame?.FrameOrder ?? -1) >= e.FrameOrder) { return; }
+        lastFrame = e;
+        //previewSize = new Size(e.Width, e.Height);
+      }
     }
 
 		//public void OnPreviewFrame(byte[] data, Camera camera)

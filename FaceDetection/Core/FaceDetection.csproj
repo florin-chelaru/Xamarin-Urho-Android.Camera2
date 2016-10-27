@@ -39,6 +39,7 @@
     <Compile Include="Rect.cs" />
     <Compile Include="UrhoApp.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="CameraPreviewEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Urho">

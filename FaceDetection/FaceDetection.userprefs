@@ -1,16 +1,24 @@
 ﻿<Properties StartupConfiguration="{FB39AA55-3132-4F96-93B1-6DA799D45646}|Default">
-  <MonoDevelop.Ide.Workbench ActiveDocument="Core/UrhoApp.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Droid/CameraWrapper.cs">
     <Files>
-      <File FileName="Core/UrhoApp.cs" Line="24" Column="21" />
-      <File FileName="Droid/MainActivity.cs" Line="42" Column="12" />
-      <File FileName="UWP/MainPage.xaml.cs" Line="45" Column="40" />
+      <File FileName="Core/UrhoApp.cs" Line="94" Column="60" />
+      <File FileName="Droid/MainActivity.cs" Line="73" Column="16" />
+      <File FileName="Droid/CameraWrapper.cs" Line="517" Column="67" />
+      <File FileName="Droid/CameraPreviewProcessor.cs" Line="112" Column="130" />
+      <File FileName="Core/CameraPreviewEventArgs.cs" Line="2" Column="24" />
     </Files>
     <Pads>
       <Pad Id="ProjectPad">
         <State name="__root__">
           <Node name="FaceDetection" expanded="True">
-            <Node name="FaceDetection" expanded="True">
-              <Node name="UrhoApp.cs" selected="True" />
+            <Node name="NotImplemented" expanded="True">
+              <Node name="FaceDetection.Droid" expanded="True">
+                <Node name="CameraWrapper.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="FaceDetection" expanded="True" />
+            <Node name="Twinfog.Camera2" expanded="True">
+              <Node name="Jars" expanded="True" />
             </Node>
           </Node>
         </State>
@@ -22,5 +30,5 @@
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
   <MonoDevelop.Ide.DebuggingService.PinnedWatches />
-  <MonoDevelop.Ide.ItemProperties.NotImplemented.FaceDetection.Droid PreferredExecutionTarget="Android.AVD_for_Nexus_6_by_Google_1G" />
+  <MonoDevelop.Ide.ItemProperties.NotImplemented.FaceDetection.Droid PreferredExecutionTarget="Android.0408c283215c0656" />
 </Properties>
