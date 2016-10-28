@@ -6,6 +6,7 @@ using Android.Support.V8.Renderscript;
 using Java.Nio;
 using Com.Twinfog.Camera;
 using RType = Android.Support.V8.Renderscript.Type;
+using System.Diagnostics;
 
 namespace FaceDetection.Droid
 {
@@ -17,25 +18,16 @@ namespace FaceDetection.Droid
 
     public void OnImageAvailable(ImageReader reader)
     {
-      byte[] y;
-      byte[] u;
-      byte[] v;
-      int yRowStride, uvRowStride, uvPixelStride;
-      int width, height;
+      byte[] y = null;
+      byte[] u = null;
+      byte[] v = null;
+      int yRowStride = 0, uvRowStride = 0, uvPixelStride = 0;
+      int width = 0, height = 0;
       using (var image = reader.AcquireLatestImage())
       {
         try
         {
           if (image == null) { return; }
-
-          //using (Bitmap bitmap = YUV_420_888_toRGB(image, image.Width, image.Height))
-          //{
-          //  var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
-          //  bitmap.CopyPixelsToBuffer(rawBuffer);
-          //  rawBuffer.Rewind();
-          //  byte[] rawBytes = new byte[rawBuffer.Remaining()];
-          //  rawBuffer.Get(rawBytes);
-          //}
 
           // Get the three image planes
           Image.Plane[] planes = image.GetPlanes();
@@ -74,15 +66,27 @@ namespace FaceDetection.Droid
     int lastStarted = -1;
     public event EventHandler<CameraPreviewEventArgs> PreviewFrameAvailable;
 
+    Stopwatch watch = new Stopwatch();
+    //long sum;
+    //long count;
+
     void HandleYUV(byte[] y, byte[] u, byte[] v, int width, int height, int yRowStride, int uvRowStride, int uvPixelStride)
     {
-      int current;
-      lock (sync)
+      if (watch.IsRunning)
       {
-        current = ++lastStarted;
+        watch.Stop();
+        Debug.WriteLine($"{nameof(CameraPreviewProcessor)} :: {nameof(HandleYUV)} :: {watch.ElapsedMilliseconds}");
+        watch = new Stopwatch();
       }
+      watch.Start();
 
-      if (PreviewFrameAvailable == null) { return; }
+      //int current;
+      //lock (sync)
+      //{
+      //  current = ++lastStarted;
+      //}
+
+      //if (PreviewFrameAvailable == null) { return; }
 
       Task.Run(() =>
       {
@@ -90,6 +94,7 @@ namespace FaceDetection.Droid
         using (Bitmap bitmap = Yuv420888ToRgb(y, u, v, width, height, yRowStride, uvRowStride, uvPixelStride))
         {
           y = u = v = null; // free some of the memory just in case
+
 
           var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
           bitmap.CopyPixelsToBuffer(rawBuffer);
@@ -109,7 +114,7 @@ namespace FaceDetection.Droid
 
         //  handler(this, new CameraPreviewEventArgs { FrameData = rawBytes, Width = width, Height = height });
         //}
-        handler(this, new CameraPreviewEventArgs { FrameOrder = current, FrameData = rawBytes, Width = width, Height = height });
+        //handler(this, new CameraPreviewEventArgs { FrameOrder = current, FrameData = rawBytes, Width = width, Height = height });
       });
     }
 

@@ -181,7 +181,7 @@ namespace FaceDetection
 			// Viewport
 			var vp = new Viewport(Context, scene, camera, null);
 			Renderer.SetViewport(0, vp);
-			vp.SetClearColor(Color.White);
+      vp.SetClearColor(new Color(1,1,1,1));
 		}
 
 		void CreateVideoTexturePlaceholder(int width, int height)
@@ -195,8 +195,9 @@ namespace FaceDetection
 			material.SetTechnique(0, CoreAssets.Techniques.Diff, 0, 0);
 			planeNode = scene.CreateChild();
 			planeNode.Position = new Vector3(0, 0, 7);
-			const float xScale = 5;
+			const float xScale = 4;
 			planeNode.Scale = new Vector3(xScale, xScale * height / width, xScale);
+      planeNode.Roll(270f, TransformSpace.World);
 			var planeModel = planeNode.CreateComponent<StaticModel>();
 			planeModel.Model = CoreAssets.Models.Box;
 			planeModel.SetMaterial(material);

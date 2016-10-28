@@ -53,6 +53,7 @@ namespace FaceDetection.Droid
 			var layout = new AbsoluteLayout(this);
 			Urho.Application.Started += UrhoAppStarted;
 			var surface = UrhoSurface.CreateSurface<UrhoApp>(this);
+      surface.SetBackgroundColor(Color.Transparent);
 			layout.AddView(surface);
 			SetContentView(layout);
 		}
@@ -83,13 +84,13 @@ namespace FaceDetection.Droid
 
     void OnPreviewFrame(object sender, CameraPreviewEventArgs e)
     {
-      //if (watch.IsRunning)
-      //{
-      //  watch.Stop();
-      //  System.Diagnostics.Debug.WriteLine($"New preview frame after: {watch.Elapsed}");
-      //  watch = new Stopwatch();
-      //}
-      //watch.Start();
+      if (watch.IsRunning)
+      {
+        watch.Stop();
+        System.Diagnostics.Debug.WriteLine($"{nameof(MainActivity)} :: {nameof(OnPreviewFrame)} :: New preview frame after: {watch.ElapsedMilliseconds}");
+        watch = new Stopwatch();
+      }
+      watch.Start();
 
       if ((lastFrame?.FrameOrder ?? -1) >= e.FrameOrder) { return; }
       lock (sync)
@@ -110,8 +111,8 @@ namespace FaceDetection.Droid
 		{
 			UrhoSurface.OnResume();
       camera.StartBackgroundThread();
-      //previewSize = camera.OpenCamera(new Size(320, 240));
-      previewSize = camera.OpenCamera();
+      previewSize = camera.OpenCamera(new Size(640, 480));
+      //previewSize = camera.OpenCamera(new Size(768, 1024));
 			base.OnResume();
 		}
 

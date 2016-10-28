@@ -20,6 +20,7 @@ using Java.Nio;
 using Java.Util;
 using Java.Util.Concurrent;
 using RType = Android.Support.V8.Renderscript.Type;
+using ACameraPreviewProcessor = Com.Twinfog.Camera.CameraPreviewProcessor;
 
 namespace FaceDetection.Droid
 {
@@ -85,7 +86,7 @@ namespace FaceDetection.Droid
         var map = (StreamConfigurationMap)characteristics.Get(CameraCharacteristics.ScalerStreamConfigurationMap);
         if (map == null) { continue; }
 
-        if (previewSize == null)
+         if (previewSize == null)
         {
           // For still image captures, we use the largest available size.
 
@@ -106,10 +107,14 @@ namespace FaceDetection.Droid
         }
         this.previewSize = previewSize;
 
-        imageReader = ImageReader.NewInstance(previewSize.Width, previewSize.Height, ImageFormatType.Yuv420888, /*maxImages*/2);
+        imageReader = ImageReader.NewInstance(previewSize.Width, previewSize.Height, ImageFormatType.Yuv420888, /*maxImages*/5);
 
-        var camPreviewProcessor = new CameraPreviewProcessor();
-        camPreviewProcessor.PreviewFrameAvailable += CamPreviewProcessor_PreviewFrameAvailable;
+        var ncpus = Java.Lang.Runtime.GetRuntime().AvailableProcessors();
+
+        var camPreviewProcessor = new ACameraPreviewProcessor(activity, ncpus);
+        camPreviewProcessor.Rgb += CamPreviewProcessor_Rgb;
+
+        //camPreviewProcessor. PreviewFrameAvailable += CamPreviewProcessor_PreviewFrameAvailable;
         imageReader.SetOnImageAvailableListener(camPreviewProcessor, backgroundHandler);
 
 
@@ -332,7 +337,7 @@ namespace FaceDetection.Droid
       try
       {
         // Auto focus should be continuous for camera preview.
-        previewRequestBuilder.Set(CaptureRequest.ControlAfMode, (int)ControlAFMode.ContinuousPicture);
+        previewRequestBuilder.Set(CaptureRequest.ControlAfMode, (int)ControlAFMode.Edof);
         // Flash is automatically enabled when necessary. For now, we skip this.
         // SetAutoFlash(previewRequestBuilder);
 
@@ -737,6 +742,16 @@ namespace FaceDetection.Droid
       rgbOut[outOffset + 1] = (byte)System.Math.Max(0, System.Math.Min(COLOR_MAX, g));
       rgbOut[outOffset + 2] = (byte)System.Math.Max(0, System.Math.Min(COLOR_MAX, b));
     }
+
+    void CamPreviewProcessor_Rgb(object sender, RgbAvailableEventArgs e)
+    {
+      var handler = PreviewFrameAvailable;
+      if (handler != null)
+      {
+        handler(this, new CameraPreviewEventArgs { FrameData = e.P0, Width = e.P1, Height = e.P2, FrameOrder = e.P3 });
+      }
+    }
+
     #endregion
 
     static Size ChooseOptimalSize(Size[] choices, int textureViewWidth,
