@@ -85,23 +85,30 @@ namespace FaceDetection
         CreateVideoTexturePlaceholder(frame.Width, frame.Height);
       }
 
-			fixed (byte* bptr = frame.FrameData)
-			{
-        //var ret = new Image();
-        //ret.SetSize(frame.FrameWidth, frame.FrameHeight, 4);
-        //ret.SetData(bptr);
+      try
+      {
+        fixed (byte* bptr = frame.FrameData.Data)
+        {
+          //var ret = new Image();
+          //ret.SetSize(frame.FrameWidth, frame.FrameHeight, 4);
+          //ret.SetData(bptr);
 
-        cameraTexture?.SetData(0, 0, 0, frame.Width, frame.Height, bptr);
-        //cameraTexture?.SetData(ret, true);
-			}
+          cameraTexture?.SetData(0, 0, 0, frame.Width, frame.Height, bptr);
+          //cameraTexture?.SetData(ret, true);
+        }
 
-      //if (frame.Faces?.Any() ?? false)
-      //	DrawMask(frame.FrameWidth, frame.FrameHeight, frame.Faces.First());
-      //else
-      //	DrawMask(frame.FrameWidth, frame.FrameHeight, null);
+        //if (frame.Faces?.Any() ?? false)
+        //	DrawMask(frame.FrameWidth, frame.FrameHeight, frame.Faces.First());
+        //else
+        //	DrawMask(frame.FrameWidth, frame.FrameHeight, null);
 
-      //stopWatch.Stop();
-      //System.Diagnostics.Debug.WriteLine(stopWatch.Elapsed);
+        //stopWatch.Stop();
+        //System.Diagnostics.Debug.WriteLine(stopWatch.Elapsed);
+      }
+      finally
+      {
+        frame.FrameData.Release();
+      }
 		}
 
 		void DrawMask(int frameW, int frameH, Rect? first)

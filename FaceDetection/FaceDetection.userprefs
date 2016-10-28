@@ -1,13 +1,29 @@
 ﻿<Properties StartupConfiguration="{FB39AA55-3132-4F96-93B1-6DA799D45646}|Default">
   <MonoDevelop.Ide.Workbench ActiveDocument="Droid/CameraWrapper.cs">
     <Files>
-      <File FileName="Core/UrhoApp.cs" Line="194" Column="60" />
-      <File FileName="Droid/MainActivity.cs" Line="112" Column="27" />
-      <File FileName="Droid/CameraWrapper.cs" Line="340" Column="87" />
+      <File FileName="Core/UrhoApp.cs" Line="110" Column="35" />
+      <File FileName="Droid/MainActivity.cs" Line="114" Column="56" />
+      <File FileName="Droid/CameraWrapper.cs" Line="527" Column="5" />
       <File FileName="Droid/CameraPreviewProcessor.cs" Line="67" Column="42" />
-      <File FileName="Core/CameraPreviewEventArgs.cs" Line="6" Column="16" />
+      <File FileName="Core/CameraPreviewEventArgs.cs" Line="7" Column="29" />
       <File FileName="../../Xamarin.Android.Camera2Basic/Camera2Basic/Camera2BasicFragment.cs" Line="329" Column="25" />
+      <File FileName="Core/IConcurrentBuffer.cs" Line="7" Column="20" />
+      <File FileName="Droid/ConcurrentBufferImpl.cs" Line="17" Column="47" />
     </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="FaceDetection" expanded="True">
+            <Node name="NotImplemented" expanded="True">
+              <Node name="FaceDetection.Droid" expanded="True">
+                <Node name="CameraWrapper.cs" selected="True" />
+              </Node>
+            </Node>
+            <Node name="FaceDetection" expanded="True" />
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

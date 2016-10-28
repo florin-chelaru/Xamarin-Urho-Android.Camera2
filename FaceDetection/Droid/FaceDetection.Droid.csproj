@@ -66,6 +66,7 @@
     <Compile Include="CompareSizesByArea.cs" />
     <Compile Include="CameraWrapper.cs" />
     <Compile Include="CameraPreviewProcessor.cs" />
+    <Compile Include="ConcurrentBufferImpl.cs" />
   </ItemGroup>
   <ItemGroup>
     <AndroidAsset Include="Assets\Data\Fonts\Font.ttf" />

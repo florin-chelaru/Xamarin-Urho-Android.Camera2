@@ -44,6 +44,8 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
     private Deque<YuvToRgbTask> taskPool = new ArrayDeque<>();
     private Semaphore taskPoolLock = new Semaphore(1);
 
+    private final ConcurrentBufferPool bufferPool = new ConcurrentBufferPool();
+
     public CameraPreviewProcessor(Context context) {
         this(context, NUMBER_OF_CORES);
         this.context = context;
@@ -61,6 +63,8 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
 
     public void setRgbListener(OnRgbAvailableListener rgbListener) { this.rgbListener = rgbListener; }
     public void setBitmapListener(OnBitmapAvailableListener bitmapListener) { this.bitmapListener = bitmapListener; }
+
+    public ConcurrentBufferPool getBufferPool() { return bufferPool; }
 
     /**
      * Callback that is called when a new image is available from ImageReader.
@@ -91,7 +95,7 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
                 task.setFrameOrder(++lastFrameIndex);
             } else {
                 //Log.d(TAG, "*** onImageAvailable() :: Creating NEW task");
-                task = new YuvToRgbTask(context, image, ++lastFrameIndex, taskPool, taskPoolLock, rgbListener, bitmapListener);
+                task = new YuvToRgbTask(context, image, ++lastFrameIndex, taskPool, taskPoolLock, bufferPool, rgbListener, bitmapListener);
             }
         } catch (InterruptedException e) {
             return;
@@ -111,27 +115,29 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
         private Deque<YuvToRgbTask> taskPool;
         private Semaphore taskPoolLock;
         private Yuv420888ToRgbConverter converter;
+        private ConcurrentBufferPool bufferPool;
 
-        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock) {
+        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, ConcurrentBufferPool bufferPool) {
             this.context = context;
             this.image = image;
             this.frameOrder = frameOrder;
             this.taskPool = taskPool;
             this.taskPoolLock = taskPoolLock;
+            this.bufferPool = bufferPool;
         }
 
-        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, OnRgbAvailableListener rgbListener) {
-            this(context, image, frameOrder, taskPool, taskPoolLock);
+        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, ConcurrentBufferPool bufferPool, OnRgbAvailableListener rgbListener) {
+            this(context, image, frameOrder, taskPool, taskPoolLock, bufferPool);
             this.rgbListener = rgbListener;
         }
 
-        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, OnBitmapAvailableListener bitmapListener) {
-            this(context, image, frameOrder, taskPool, taskPoolLock);
+        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, ConcurrentBufferPool bufferPool, OnBitmapAvailableListener bitmapListener) {
+            this(context, image, frameOrder, taskPool, taskPoolLock, bufferPool);
             this.bitmapListener = bitmapListener;
         }
 
-        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, OnRgbAvailableListener rgbListener, OnBitmapAvailableListener bitmapListener) {
-            this(context, image, frameOrder, taskPool, taskPoolLock);
+        public YuvToRgbTask(Context context, Image image, long frameOrder, Deque<YuvToRgbTask> taskPool, Semaphore taskPoolLock, ConcurrentBufferPool bufferPool, OnRgbAvailableListener rgbListener, OnBitmapAvailableListener bitmapListener) {
+            this(context, image, frameOrder, taskPool, taskPoolLock, bufferPool);
             this.rgbListener = rgbListener;
             this.bitmapListener = bitmapListener;
         }
@@ -148,7 +154,7 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
                     return;
                 }
 
-                byte[] rawBytes = null;
+                ConcurrentBuffer concurrentBuffer = null;
                 int width, height;
 
                 // Encapsulate everything in a context so at the end it can be garbage collected
@@ -183,13 +189,15 @@ public class CameraPreviewProcessor implements ImageReader.OnImageAvailableListe
                     rawBuffer.rewind();
                     bitmap.copyPixelsToBuffer(rawBuffer);
                     rawBuffer.rewind();
-                    rawBytes = new byte[rawBuffer.remaining()];
-                    rawBuffer.get(rawBytes);
+                    concurrentBuffer = bufferPool.getBuffer(rawBuffer.remaining());
+                    rawBuffer.get(concurrentBuffer.getData());
                     width = bitmap.getWidth();
                     height = bitmap.getHeight();
                 }
 
-                rgbListener.onRgbAvailable(rawBytes, width, height, frameOrder);
+                rgbListener.onRgbAvailable(concurrentBuffer, width, height, frameOrder);
+            } catch (InterruptedException e) {
+                return;
             } finally {
                 try {
                     taskPoolLock.acquire();

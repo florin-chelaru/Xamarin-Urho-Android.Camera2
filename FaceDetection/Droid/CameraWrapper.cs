@@ -525,67 +525,67 @@ namespace FaceDetection.Droid
       if (handler != null) { handler(this, e); }
     }
 
-    public void OnImageAvailable(ImageReader reader)
-    {
-      var handler = PreviewFrameAvailable;
-      if (handler == null) { return; }
+    //public void OnImageAvailable(ImageReader reader)
+    //{
+    //  var handler = PreviewFrameAvailable;
+    //  if (handler == null) { return; }
 
-      //handler(this, null);
-      using (var image = reader.AcquireNextImage())
-      {
-        try
-        {
-          //var plane = reader.AcquireNextImage().GetPlanes()[0];
-          if (image == null) { return; }
+    //  //handler(this, null);
+    //  using (var image = reader.AcquireNextImage())
+    //  {
+    //    try
+    //    {
+    //      //var plane = reader.AcquireNextImage().GetPlanes()[0];
+    //      if (image == null) { return; }
 
-          //var planes = image.GetPlanes();
-          //var plane = planes[0];
-          //var buffer = plane.Buffer;
+    //      //var planes = image.GetPlanes();
+    //      //var plane = planes[0];
+    //      //var buffer = plane.Buffer;
 
-          //buffer.Rewind();
-          //byte[] bytes = new byte[buffer.Remaining()];
-          //buffer.Get(bytes);
+    //      //buffer.Rewind();
+    //      //byte[] bytes = new byte[buffer.Remaining()];
+    //      //buffer.Get(bytes);
 
-          ////using (var output = new FileOutputStream(new Java.IO.File(activity.GetExternalFilesDir(null), "florin-pic.jpg")))
-          ////{
-          ////  try
-          ////  {
-          ////    output.Write(bytes);
-          ////  }
-          ////  catch (Java.IO.IOException e)
-          ////  {
-          ////    System.Diagnostics.Debug.WriteLine($"{e}");
-          ////  }
-          ////}
+    //      ////using (var output = new FileOutputStream(new Java.IO.File(activity.GetExternalFilesDir(null), "florin-pic.jpg")))
+    //      ////{
+    //      ////  try
+    //      ////  {
+    //      ////    output.Write(bytes);
+    //      ////  }
+    //      ////  catch (Java.IO.IOException e)
+    //      ////  {
+    //      ////    System.Diagnostics.Debug.WriteLine($"{e}");
+    //      ////  }
+    //      ////}
 
-          //using (Bitmap bitmap = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length))
-          //{
-          //  var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
-          //  bitmap.CopyPixelsToBuffer(rawBuffer);
-          //  rawBuffer.Rewind();
-          //  byte[] rawBytes = new byte[rawBuffer.Remaining()];
-          //  rawBuffer.Get(rawBytes);
+    //      //using (Bitmap bitmap = BitmapFactory.DecodeByteArray(bytes, 0, bytes.Length))
+    //      //{
+    //      //  var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
+    //      //  bitmap.CopyPixelsToBuffer(rawBuffer);
+    //      //  rawBuffer.Rewind();
+    //      //  byte[] rawBytes = new byte[rawBuffer.Remaining()];
+    //      //  rawBuffer.Get(rawBytes);
 
-          //  handler(this, new CameraPreviewEventArgs { FrameData = rawBytes, Width = bitmap.Width, Height = bitmap.Height });
-          //}
+    //      //  handler(this, new CameraPreviewEventArgs { FrameData = rawBytes, Width = bitmap.Width, Height = bitmap.Height });
+    //      //}
 
-          using (Bitmap bitmap = YUV_420_888_toRGB(image, image.Width, image.Height))
-          {
-              var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
-              bitmap.CopyPixelsToBuffer(rawBuffer);
-              rawBuffer.Rewind();
-              byte[] rawBytes = new byte[rawBuffer.Remaining()];
-              rawBuffer.Get(rawBytes);
+    //      using (Bitmap bitmap = YUV_420_888_toRGB(image, image.Width, image.Height))
+    //      {
+    //          var rawBuffer = ByteBuffer.Allocate(bitmap.ByteCount);
+    //          bitmap.CopyPixelsToBuffer(rawBuffer);
+    //          rawBuffer.Rewind();
+    //          byte[] rawBytes = new byte[rawBuffer.Remaining()];
+    //          rawBuffer.Get(rawBytes);
 
-              handler(this, new CameraPreviewEventArgs { FrameData = rawBytes, Width = bitmap.Width, Height = bitmap.Height });
-          }
-        }
-        finally
-        {
-          image?.Close();
-        }
-      }
-    }
+    //          handler(this, new CameraPreviewEventArgs { FrameData = rawBytes, Width = bitmap.Width, Height = bitmap.Height });
+    //      }
+    //    }
+    //    finally
+    //    {
+    //      image?.Close();
+    //    }
+    //  }
+    //}
 
     private Bitmap YUV_420_888_toRGB(Image image, int width, int height)
     {
@@ -748,7 +748,7 @@ namespace FaceDetection.Droid
       var handler = PreviewFrameAvailable;
       if (handler != null)
       {
-        handler(this, new CameraPreviewEventArgs { FrameData = e.P0, Width = e.P1, Height = e.P2, FrameOrder = e.P3 });
+        handler(this, new CameraPreviewEventArgs { FrameData = new ConcurrentBufferImpl(e.P0), Width = e.P1, Height = e.P2, FrameOrder = e.P3 });
       }
     }
 

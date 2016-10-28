@@ -13,5 +13,5 @@ public interface OnRgbAvailableListener {
      * @param height
      * @param frameOrder
      */
-    void onRgbAvailable(byte[] imageBytes, int width, int height, long frameOrder);
+    void onRgbAvailable(ConcurrentBuffer imageBytes, int width, int height, long frameOrder);
 }
